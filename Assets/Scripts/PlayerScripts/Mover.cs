@@ -4,58 +4,53 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Mover : MonoBehaviour
+namespace RPG.Movement
 {
-    [SerializeField] Transform targetPos;
-    [SerializeField] float speed = 5f;
-    NavMeshAgent agent;
-    Ray lastRay;
-    Camera cam;
-    Animator animator;
-
-    int animSpeedId;
-
-    private void Start()
+    public class Mover : MonoBehaviour
     {
-        animator = GetComponent<Animator>();
-        animSpeedId = Animator.StringToHash("Speed");
+        [SerializeField] Transform targetPos;
+        [SerializeField] float speed = 5f;
+        NavMeshAgent agent;
+        Ray lastRay;
+        Camera cam;
+        Animator animator;
 
-        cam = Camera.main;
-        agent = GetComponent<NavMeshAgent>();
-        agent.speed = speed;
-    }
+        int animSpeedId;
 
-    void Update()
-    {
-        transform.LookAt(targetPos);
 
-        if (Input.GetMouseButtonDown(0))
+        private void Start()
         {
-            MoveToCursor();
+            animator = GetComponent<Animator>();
+            animSpeedId = Animator.StringToHash("Speed");
+
+            cam = Camera.main;
+            agent = GetComponent<NavMeshAgent>();
+            agent.speed = speed;
         }
-        // Debug.DrawRay(lastRay.origin, lastRay.direction * 100);
-        UpdateAnimator();
-    }
 
-    private void UpdateAnimator()
-    {
-        // Get the global velocity from Nav Mesh Agent
-        Vector3 veloctiy = agent.velocity;
-        // Convert this into a local value relative to the character
-        Vector3 localVelocity = transform.InverseTransformDirection(veloctiy); // our Animator only wants to know if we run forward or not
-
-        // Set the Animators blend value to our desired Speed (Z Axis)
-        float speed = localVelocity.z;
-        animator.SetFloat(animSpeedId, speed);
-    }
-
-    void MoveToCursor()
-    {
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        void Update()
         {
-            agent.SetDestination(hit.point);
+            UpdateAnimator();
+        }
+
+        private void UpdateAnimator()
+        {
+            // Get the global velocity from Nav Mesh Agent
+            Vector3 veloctiy = agent.velocity;
+            // Convert this into a local value relative to the character
+            Vector3 localVelocity = transform.InverseTransformDirection(veloctiy); // our Animator only wants to know if we run forward or not
+
+            // Set the Animators blend value to our desired Speed (Z Axis)
+            float speed = localVelocity.z;
+            animator.SetFloat(animSpeedId, speed);
+        }
+
+
+
+        public void MoveTo(Vector3 _destination)
+        {
+            agent.SetDestination(_destination);
         }
     }
+
 }
