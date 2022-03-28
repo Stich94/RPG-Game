@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using RPG.Combat;
 
 namespace RPG.Movement
 {
@@ -15,11 +16,16 @@ namespace RPG.Movement
         Camera cam;
         Animator animator;
 
+        Fighter combat;
+
         int animSpeedId;
 
 
         private void Start()
         {
+
+
+            combat = GetComponent<Fighter>();
             animator = GetComponent<Animator>();
             animSpeedId = Animator.StringToHash("Speed");
 
@@ -31,6 +37,11 @@ namespace RPG.Movement
         void Update()
         {
             UpdateAnimator();
+        }
+
+        public void Stop()
+        {
+            agent.isStopped = true;
         }
 
         private void UpdateAnimator()
@@ -45,10 +56,18 @@ namespace RPG.Movement
             animator.SetFloat(animSpeedId, speed);
         }
 
+        public void StartMoveAction(Vector3 _destination)
+        {
+            combat.Cancel();
+            MoveTo(_destination);
+        }
+
 
 
         public void MoveTo(Vector3 _destination)
         {
+
+            agent.isStopped = false;
             agent.SetDestination(_destination);
         }
     }
